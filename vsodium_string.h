@@ -15,6 +15,7 @@ public:
 
     //vsodium_string(const std::string& data);
     explicit vsodium_string(size_t size);
+    //explicit vsodium_string(const char *);
     explicit vsodium_string(std::string_view view);
 
     vsodium_string(vsodium_string&&) = default;
@@ -53,9 +54,13 @@ public:
 
     void resize(size_t size);
 
+    // correct size without reallocation.
+    void decrement_size_to(size_t size);
+
     unsigned char at(size_t pos) const;
 
     vsodium_string right(size_t size) const;
+    vsodium_string mid(size_t pos, size_t len) const;
 
     void random(size_t size);
 

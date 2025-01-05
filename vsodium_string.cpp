@@ -28,7 +28,7 @@ public:
         len = 0;
     }
 
-    void malloc(size_t size)
+    void alloc(size_t size)
     {
         clear();
         ptr = static_cast<decltype(ptr)>( sodium_malloc(size) );
@@ -42,7 +42,7 @@ public:
         if (len != size)
         {
             clear();
-            malloc(size);
+            alloc(size);
         }
         auto vptr = static_cast<const void*>(_src);
         auto src  = static_cast<const unsigned char*>(vptr);
@@ -90,7 +90,7 @@ vsodium_string& vsodium_string::operator += ( const vsodium_string & rhs )
     if ( rhs.empty() ) return *this;
 
     auto res = new pimpl;
-    res->malloc( size() + rhs.size() );
+    res->alloc( size() + rhs.size() );
 
     auto begin = const_data();
     auto end = const_data() + size();
@@ -186,7 +186,13 @@ void vsodium_string::resize( size_t _size )
     assert_p();
     if (size() == _size) return;
     p->clear();
-    p->malloc(_size);
+    p->alloc(_size);
+}
+//=======================================================================================
+void vsodium_string::decrement_size_to( size_t _size )
+{
+    if ( _size > size() ) throw std::runtime_error(__func__);
+    p->len = _size;
 }
 //=======================================================================================
 unsigned char vsodium_string::at(size_t pos) const
@@ -206,6 +212,14 @@ vsodium_string vsodium_string::right(size_t _size) const
     auto end = begin + _size;
     vsodium_string res(_size);
     std::copy(begin, end, res.data());
+    return res;
+}
+//=======================================================================================
+vsodium_string vsodium_string::mid( size_t pos, size_t len ) const
+{
+    if ( pos + len > size() ) throw std::runtime_error(__func__);
+    vsodium_string res;
+    res.p->set( data() + pos, len );
     return res;
 }
 //=======================================================================================

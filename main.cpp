@@ -3,7 +3,7 @@
 #include "vsodium_string.h"
 #include "vsodium_curve25519.h"
 #include "vlog.h"
-
+#include "vsodium_xchacha20poly1305_ietf.h"
 using namespace std;
 
 //=======================================================================================
@@ -24,6 +24,12 @@ int main()
 
     auto sec2 = serv.shared_server(ed25519.x_public);
     vdeb << sec2.to_hex();
+
+    vsodium_xchacha20poly1305_ietf aes(sec2);
+
+    auto cip = aes.encrypt( vsodium_string("test") );
+    vdeb << cip << cip.to_hex();
+    vdeb << aes.decrypt(cip);
 
     return 0;
 }
