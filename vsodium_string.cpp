@@ -229,6 +229,11 @@ void vsodium_string::random( size_t _size )
     randombytes_buf( data(), size() );
 }
 //=======================================================================================
+uint32_t vsodium_string::rand32( uint32_t upper_bound )
+{
+    return randombytes_uniform( upper_bound );
+}
+//=======================================================================================
 void vsodium_string::assert_p() const
 {
     if (!p) throw std::runtime_error("pimpl assert");

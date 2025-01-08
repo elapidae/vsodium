@@ -61,7 +61,7 @@ public:
 class vsodium_ed25519::x25519_secret_key : public _vsodium_key_
 {
 public:
-    explicit x25519_secret_key(vsodium_string k = {});
+    explicit x25519_secret_key( const vsodium_string& k = {});
 
     x25519_public_key x_public() const;
 

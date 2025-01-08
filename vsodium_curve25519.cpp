@@ -151,7 +151,7 @@ bool vsodium_ed25519::public_key::valid() const
 
 
 //=======================================================================================
-vsodium_ed25519::x25519_secret_key::x25519_secret_key(vsodium_string k)
+vsodium_ed25519::x25519_secret_key::x25519_secret_key( const vsodium_string& k)
     :_vsodium_key_(k)
 {}
 //=======================================================================================

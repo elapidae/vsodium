@@ -4,7 +4,7 @@
 #include <ostream>
 #include <memory>
 #include <string_view>
-
+#include <limits>
 
 //=======================================================================================
 class vsodium_string final
@@ -63,6 +63,7 @@ public:
     vsodium_string mid(size_t pos, size_t len) const;
 
     void random(size_t size);
+    static uint32_t rand32(uint32_t upper_bound = std::numeric_limits<uint32_t>::max());
 
     static void test();
 
