@@ -223,23 +223,6 @@ void vsodium_ed25519::full::fill()
     x_public = ed_public.x_public();
 }
 //=======================================================================================
-static auto _additional_phrases_ = {
-    "Lorem ipsum 42",
-    "Dog's health",
-    "Ophiophagus hannah",
-    "Pokerface",
-    "Factorio"
-};
-static vsodium_string additional_shared_hash( const vsodium_string& prev_step )
-{
-    vsodium_string res = prev_step;
-    for ( auto & phrase: _additional_phrases_ )
-    {
-        res = (res + vsodium_string{phrase}).sha512();
-    }
-    return res;
-}
-//=======================================================================================
 vsodium_string vsodium_ed25519::full::shared_client(const x25519_public_key &server_key)
 {
     if ( !server_key.valid() ) return {};
@@ -249,7 +232,7 @@ vsodium_string vsodium_ed25519::full::shared_client(const x25519_public_key &ser
     auto mult = x_secret.scalarmult( server_key );
     auto h = mult + x_public.key() + server_key.key();
 
-    return additional_shared_hash( h.sha512() );
+    return h.mishumi_sha512_hash();
 }
 //=======================================================================================
 vsodium_string vsodium_ed25519::full::shared_server(const x25519_public_key &client_key)
@@ -261,7 +244,7 @@ vsodium_string vsodium_ed25519::full::shared_server(const x25519_public_key &cli
     auto mult = x_secret.scalarmult( client_key );
     auto h = mult + client_key.key() + x_public.key();
 
-    return additional_shared_hash( h.sha512() );
+    return h.mishumi_sha512_hash();
 }
 //=======================================================================================
 

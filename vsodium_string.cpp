@@ -67,16 +67,16 @@ vsodium_string::vsodium_string()
 vsodium_string::~vsodium_string()
 {}
 //=======================================================================================
-//vsodium_string::vsodium_string( const std::string & data )
-//    : vsodium_string()
-//{
-//    p->set( data.data(), data.size() );
-//}
-//=======================================================================================
 vsodium_string::vsodium_string( size_t _size )
     : vsodium_string()
 {
     resize( _size );
+}
+//=======================================================================================
+vsodium_string::vsodium_string( const char *data, size_t size )
+    : vsodium_string()
+{
+    copy( data, size );
 }
 //=======================================================================================
 vsodium_string::vsodium_string( std::string_view view )
@@ -189,6 +189,11 @@ void vsodium_string::resize( size_t _size )
     p->alloc(_size);
 }
 //=======================================================================================
+void vsodium_string::copy( const char *data, size_t size )
+{
+    p->set( data, size );
+}
+//=======================================================================================
 void vsodium_string::decrement_size_to( size_t _size )
 {
     if ( _size > size() ) throw std::runtime_error(__func__);
@@ -232,6 +237,24 @@ void vsodium_string::random( size_t _size )
 uint32_t vsodium_string::rand32( uint32_t upper_bound )
 {
     return randombytes_uniform( upper_bound );
+}
+//=======================================================================================
+vsodium_string vsodium_string::mishumi_sha512_hash() const
+{
+    static auto additional_phrases =
+    {
+        "💙💛",
+        "Dog's health 42",
+        "Ophiophagus hannah",
+        "Pokerface",
+        "Factorio"
+    };
+    vsodium_string res = *this;
+    for ( auto & phrase: additional_phrases )
+    {
+        res = (res + vsodium_string{phrase}).sha512();
+    }
+    return res;
 }
 //=======================================================================================
 void vsodium_string::assert_p() const

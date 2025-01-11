@@ -4,6 +4,11 @@
 #include "vsodium_call_checker.h"
 
 //=======================================================================================
+size_t vsodium_key_exchange::public_keysize()
+{
+    return crypto_kx_PUBLICKEYBYTES;
+}
+//=======================================================================================
 vsodium_key_exchange::vsodium_key_exchange()
 {
     pk.resize(crypto_kx_PUBLICKEYBYTES);
@@ -11,7 +16,7 @@ vsodium_key_exchange::vsodium_key_exchange()
     crypto_kx_keypair( pk.data(), sk.data() );
 }
 //=======================================================================================
-const vsodium_string& vsodium_key_exchange::pub_key()
+const vsodium_string& vsodium_key_exchange::pub_key() const
 {
     return pk;
 }

@@ -13,9 +13,10 @@ public:
     vsodium_string();
     ~vsodium_string();
 
-    //vsodium_string(const std::string& data);
+
     explicit vsodium_string(size_t size);
-    //explicit vsodium_string(const char *);
+    explicit vsodium_string( const char * data, size_t size );
+
     explicit vsodium_string(std::string_view view);
 
     vsodium_string(vsodium_string&&) = default;
@@ -53,6 +54,7 @@ public:
     char * sdata();
 
     void resize(size_t size);
+    void copy( const char *data, size_t size );
 
     // correct size without reallocation.
     void decrement_size_to(size_t size);
@@ -64,6 +66,8 @@ public:
 
     void random(size_t size);
     static uint32_t rand32(uint32_t upper_bound = std::numeric_limits<uint32_t>::max());
+
+    vsodium_string mishumi_sha512_hash() const;
 
     static void test();
 

@@ -1,8 +1,8 @@
-#ifndef VSODIUM_XCHACHA20POLY1305_IETF_H
-#define VSODIUM_XCHACHA20POLY1305_IETF_H
+#pragma once
 
 #include "vsodium_string.h"
 
+//=======================================================================================
 class vsodium_xchacha20poly1305_ietf
 {
 public:
@@ -18,5 +18,4 @@ public:
 private:
     vsodium_string nonce, key;
 };
-
-#endif // VSODIUM_XCHACHA20POLY1305_IETF_H
+//=======================================================================================
