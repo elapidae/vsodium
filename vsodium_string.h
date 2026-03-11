@@ -45,14 +45,14 @@ public:
     bool empty() const;
     size_t size() const;
 
+    const unsigned char * const_data() const;
     const unsigned char * data() const;
     unsigned char * data();
-
-    const unsigned char * const_data() const;
 
     const char * sdata() const;
     char * sdata();
 
+    void clear();
     void resize(size_t size);
     void copy( const char *data, size_t size );
 

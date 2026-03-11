@@ -30,3 +30,9 @@ include_directories( ${CMAKE_CURRENT_LIST_DIR} )
 
 set(VSODIUM_LIBRARIES ${VSODIUM_LIBRARIES} sodium)
 #set(V_LIBRARIES ${V_LIBRARIES} ${VSODIUM_LIBRARIES})
+
+# Check that libsodium library is installed
+find_library(VSODIUM_SODIUM_LIB sodium)
+if(NOT VSODIUM_SODIUM_LIB)
+    message(FATAL_ERROR "Required library 'sodium' (libsodium) was not found. Please install libsodium development package.")
+endif()

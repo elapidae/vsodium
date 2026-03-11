@@ -18,34 +18,67 @@ const vsodium_string &_vsodium_key_::key() const
 
 
 //=======================================================================================
+size_t vsodium_ed25519::seed_size()
+{
+    return crypto_sign_ed25519_SEEDBYTES;
+}
+//=======================================================================================
+size_t vsodium_ed25519::secret_key_size()
+{
+    return crypto_sign_ed25519_SECRETKEYBYTES;
+}
+//=======================================================================================
+size_t vsodium_ed25519::public_key_size()
+{
+    return crypto_sign_ed25519_PUBLICKEYBYTES;
+}
+//=======================================================================================
 void vsodium_ed25519::random()
 {
-    _key.resize(crypto_sign_ed25519_SECRETKEYBYTES);
-    vsodium_string ed25519_pk(crypto_sign_ed25519_PUBLICKEYBYTES);
-    VSODIUM_CALL << crypto_sign_ed25519_keypair( ed25519_pk.data(), _key.data() );
+    _key.resize( secret_key_size() );
+    vsodium_string ed_public( public_key_size() );
+    VSODIUM_CALL << crypto_sign_ed25519_keypair( ed_public.data(), _key.data() );
+}
+//=======================================================================================
+void vsodium_ed25519::random_seed( const std::string& _seed )
+{
+    if ( _seed.size() > seed_size() )
+        throw std::runtime_error(__func__);
 
-    auto rhs_pk = _key.right(crypto_sign_ed25519_PUBLICKEYBYTES);
-    if ( rhs_pk != ed25519_pk )
-    {
-        throw std::runtime_error("25519 keys API changed");;
-    }
+    vsodium_string seed( seed_size() );
+    sodium_memzero( seed.sdata(), seed.size() );
+    std::copy( _seed.begin(), _seed.end(), seed.sdata() );
+
+    _key.resize( secret_key_size() );
+    vsodium_string ed_public( public_key_size() );
+
+    VSODIUM_CALL << crypto_sign_ed25519_seed_keypair( ed_public.data(),
+                                                      _key.data(),
+                                                      seed.data() );
 }
 //=======================================================================================
 bool vsodium_ed25519::load( std::string fname )
 {
+    _key.clear();
+
     std::ifstream i;
     i.open(fname);
     if ( i.bad() ) return false;
 
-    vsodium_string k(crypto_sign_ed25519_SECRETKEYBYTES);
-    i.read(k.sdata(), crypto_sign_ed25519_SECRETKEYBYTES);
-    if ( !i.good() ) return false;
+    vsodium_string k( secret_key_size() );
+    i.read( k.sdata(), secret_key_size() );
+
+    if ( !i.good() )
+        return false;
+
+    if ( k.size() != secret_key_size() )
+        return false;
 
     _key = k;
-    return true;
+    return valid();
 }
 //=======================================================================================
-bool vsodium_ed25519::save(std::string fname)
+bool vsodium_ed25519::save( std::string fname ) const
 {
     if (_key.empty()) return false;
 
@@ -71,6 +104,8 @@ vsodium_string vsodium_ed25519::sign( const vsodium_string& msg ) const
 
     return sm;
 }
+//=======================================================================================
+
 //=======================================================================================
 vsodium_string vsodium_ed25519::public_key::verify(const vsodium_string &sm, bool *_ok)
 {
@@ -113,17 +148,16 @@ vsodium_ed25519::x25519_public_key vsodium_ed25519::public_key::x_public() const
 //=======================================================================================
 bool vsodium_ed25519::valid() const
 {
-    return _key.size() == crypto_sign_ed25519_SECRETKEYBYTES;
+    return _key.size() == secret_key_size();
 }
 //=======================================================================================
 vsodium_ed25519::public_key vsodium_ed25519::ed_public() const
 {
-    if (!valid()) throw std::runtime_error(__func__);
+    if ( !valid() ) throw std::runtime_error(__func__);
 
-    vsodium_string ed25519_pk(crypto_sign_ed25519_PUBLICKEYBYTES);
-    VSODIUM_CALL << crypto_sign_ed25519_sk_to_pk( ed25519_pk.data(), _key.data() );
-
-    return public_key(ed25519_pk);
+    vsodium_string ed_public( public_key_size() );
+    crypto_sign_ed25519_sk_to_pk( ed_public.data(), _key.data() );
+    return public_key( ed_public );
 }
 //=======================================================================================
 vsodium_ed25519::x25519_secret_key vsodium_ed25519::x_secret() const

@@ -5,11 +5,75 @@
 #include "vlog.h"
 #include "vsodium_xchacha20poly1305_ietf.h"
 #include "vsodium_key_exchange.h"
+
+#include "vtime_meter.h"
+
+#include <pwd.h>
+#include <shadow.h>
+
+#include <sodium.h>
+
 using namespace std;
+
+
+
+//char hashed_password[crypto_pwhash_STRBYTES];
+
+//if (crypto_pwhash_str(
+//        hashed_password,
+//        "mysecretpassword",        // пароль
+//        strlen("mysecretpassword"),
+//        crypto_pwhash_OPSLIMIT_INTERACTIVE,
+//        crypto_pwhash_MEMLIMIT_INTERACTIVE) != 0) {
+//    // Недостаточно памяти
+//    exit(1);
+//}
 
 //=======================================================================================
 int main()
 {
+    char hashed_password[crypto_pwhash_STRBYTES];
+
+    string pass = "passwordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpassword";
+
+    pass += pass + pass + pass + pass + pass + pass + pass + pass + pass + pass + pass;
+    pass += pass + pass + pass + pass + pass + pass + pass + pass + pass + pass + pass;
+    pass += pass + pass + pass + pass + pass + pass + pass + pass + pass + pass + pass;
+    pass += pass + pass + pass + pass + pass + pass + pass + pass + pass + pass + pass;
+    pass += pass + pass + pass + pass + pass + pass + pass + pass + pass + pass + pass;
+    pass += pass + pass + pass + pass + pass + pass + pass + pass + pass + pass + pass;
+
+    auto change = [&]
+    {
+        vtime_meter tm;
+        auto ops = crypto_pwhash_OPSLIMIT_SENSITIVE;
+        auto mem = crypto_pwhash_MEMLIMIT_SENSITIVE;
+//        auto ops = crypto_pwhash_OPSLIMIT_MODERATE;
+//        auto mem = crypto_pwhash_MEMLIMIT_MODERATE;
+//        auto ops = crypto_pwhash_OPSLIMIT_INTERACTIVE;
+//        auto mem = crypto_pwhash_MEMLIMIT_INTERACTIVE;
+        auto rcode =
+                crypto_pwhash_str( hashed_password,
+                                   pass.c_str(), pass.size(),
+                                   ops, mem );
+        if (rcode != 0 ) exit(1);
+        vdeb << tm.elapsed().ms();
+    };
+
+    change(); vdeb << hashed_password;
+    change(); vdeb << hashed_password;
+    change(); vdeb << hashed_password;
+
+    vtime_meter tm;
+    auto rcode =
+    crypto_pwhash_str_verify( hashed_password,
+                              pass.c_str(), pass.size() );
+    vdeb << rcode << tm.elapsed().ms();
+
+    //crypto_pwhash()
+    return 0;
+
+
     vsodium_string::test();
     vsodium_ed25519::test();
     vsodium_xchacha20poly1305_ietf::test();

@@ -24,9 +24,15 @@ public:
     class x25519_public_key;
     class x25519_secret_key;
 
+    static size_t seed_size();
+    static size_t secret_key_size();
+    static size_t public_key_size();
+
+    void random_seed( const std::string& seed );
     void random();
-    bool load(std::string fname);
-    bool save(std::string fname);
+
+    bool load( std::string fname );
+    bool save( std::string fname ) const;
 
     vsodium_string sign( const vsodium_string& data ) const;
 

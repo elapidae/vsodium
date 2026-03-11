@@ -28,7 +28,7 @@ public:
         len = 0;
     }
 
-    void alloc(size_t size)
+    void clear_alloc(size_t size)
     {
         clear();
         ptr = static_cast<decltype(ptr)>( sodium_malloc(size) );
@@ -41,8 +41,7 @@ public:
     {
         if (len != size)
         {
-            clear();
-            alloc(size);
+            clear_alloc( size );
         }
         auto vptr = static_cast<const void*>(_src);
         auto src  = static_cast<const unsigned char*>(vptr);
@@ -90,7 +89,7 @@ vsodium_string& vsodium_string::operator += ( const vsodium_string & rhs )
     if ( rhs.empty() ) return *this;
 
     auto res = new pimpl;
-    res->alloc( size() + rhs.size() );
+    res->clear_alloc( size() + rhs.size() );
 
     auto begin = const_data();
     auto end = const_data() + size();
@@ -99,7 +98,7 @@ vsodium_string& vsodium_string::operator += ( const vsodium_string & rhs )
 
     begin = rhs.data();
     end = rhs.data() + rhs.size();
-    dst = res->ptr + p->len;
+    dst = res->ptr + size();
     std::copy( begin, end, dst );
 
     p.reset( res );
@@ -181,12 +180,17 @@ char *vsodium_string::sdata()
     return p->sdata();
 }
 //=======================================================================================
+void vsodium_string::clear()
+{
+    assert_p();
+    p->clear();
+}
+//=======================================================================================
 void vsodium_string::resize( size_t _size )
 {
     assert_p();
     if (size() == _size) return;
-    p->clear();
-    p->alloc(_size);
+    p->clear_alloc(_size);
 }
 //=======================================================================================
 void vsodium_string::copy( const char *data, size_t size )
