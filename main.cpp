@@ -13,6 +13,9 @@
 
 #include <sodium.h>
 
+#include "vsodium_emodji.h"
+#include "vcat.h"
+
 using namespace std;
 
 
@@ -32,6 +35,13 @@ using namespace std;
 //=======================================================================================
 int main()
 {
+    vsodium_ed25519 emo;
+    emo.random();
+    vdeb << emo.ed_public().key().to_hex();
+    vsodium_emodji::test();
+    return 0;
+
+
     char hashed_password[crypto_pwhash_STRBYTES];
 
     string pass = "passwordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpassword";

@@ -9,8 +9,11 @@ include(vsodium.cmake)
 
 set(VLIBS_DIR ../vlibs2)
 include(${VLIBS_DIR}/cmake/vlog.cmake)
+include(${VLIBS_DIR}/cmake/vcat.cmake)
+include(${VLIBS_DIR}/cmake/vbyte_buffer.cmake)
 #include(${VLIBS_DIR}/cmake/vtime_meter.cmake)
 
-add_executable(${PROJECT_NAME} main.cpp ${VSODIUM_SOURCES} ${V_HEADERS} ${V_SOURCES})
+add_executable(${PROJECT_NAME} main.cpp ${VSODIUM_SOURCES} ${V_HEADERS} ${V_SOURCES}
+    vsodium_emodji.h vsodium_emodji.cpp)
 
 target_link_libraries(${PROJECT_NAME} ${VSODIUM_LIBRARIES})
