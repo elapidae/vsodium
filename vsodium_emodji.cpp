@@ -7,11 +7,14 @@
 #include "vlog.h"
 #include "vcat.h"
 #include"vbyte_buffer.h"
+#include"vbyte_buffer_view.h"
+
+#include "vsodium_string.h"
 
 //=======================================================================================
 static auto usable_diapazone = R"(
-2600..26FF
-2700..27BF
+# 2600..26FF
+# 2700..27BF
 1F300..1F5FF
 1F600..1F64F
 1F680..1F6FF
@@ -28,6 +31,33 @@ FE0E..FE0F     (variation selectors)
 1F1E6..1F1FF   (regional indicators / флаги)
 200D           (zero width joiner)
 )";
+//=======================================================================================
+// Deleted all strange lines;
+static auto log_of_work_emodji_v1 = R"(
+[vsodium_emodji.cpp:281] debug:	0x1f340 -> 🍀🍁🍂🍃🍄🍅🍆🍇🍈🍉🍊🍋🍌🍍🍎🍏🍐🍑🍒🍓🍔🍕🍖🍗🍘🍙🍚🍛🍜🍝🍞🍟 <- 0x1f35f
+[vsodium_emodji.cpp:281] debug:	0x1f360 -> 🍠🍡🍢🍣🍤🍥🍦🍧🍨🍩🍪🍫🍬🍭🍮🍯🍰🍱🍲🍳🍴🍵🍶🍷🍸🍹🍺🍻🍼🍽🍾🍿 <- 0x1f37f
+[vsodium_emodji.cpp:281] debug:	0x1f3a0 -> 🎠🎡🎢🎣🎤🎥🎦🎧🎨🎩🎪🎫🎬🎭🎮🎯🎰🎱🎲🎳🎴🎵🎶🎷🎸🎹🎺🎻🎼🎽🎾🎿 <- 0x1f3bf
+[vsodium_emodji.cpp:281] debug:	0x1f3e0 -> 🏠🏡🏢🏣🏤🏥🏦🏧🏨🏩🏪🏫🏬🏭🏮🏯🏰🏱🏲🏳🏴🏵🏶🏷🏸🏹🏺🐀🐁🐂🐃🐄 <- 0x1f404
+[vsodium_emodji.cpp:281] debug:	0x1f405 -> 🐅🐆🐇🐈🐉🐊🐋🐌🐍🐎🐏🐐🐑🐒🐓🐔🐕🐖🐗🐘🐙🐚🐛🐜🐝🐞🐟🐠🐡🐢🐣🐤 <- 0x1f424
+[vsodium_emodji.cpp:281] debug:	0x1f425 -> 🐥🐦🐧🐨🐩🐪🐫🐬🐭🐮🐯🐰🐱🐲🐳🐴🐵🐶🐷🐸🐹🐺🐻🐼🐽🐾🐿👀👁👂👃👄 <- 0x1f444
+[vsodium_emodji.cpp:281] debug:	0x1f445 -> 👅👆👇👈👉👊👋👌👍👎👏👐👑👒👓👔👕👖👗👘👙👚👛👜👝👞👟👠👡👢👣👤 <- 0x1f464
+[vsodium_emodji.cpp:281] debug:	0x1f465 -> 👥👦👧👨👩👪👫👬👭👮👯👰👱👲👳👴👵👶👷👸👹👺👻👼👽👾👿💀💁💂💃💄 <- 0x1f484
+[vsodium_emodji.cpp:281] debug:	0x1f485 -> 💅💆💇💈💉💊💋💌💍💎💏💐💑💒💓💔💕💖💗💘💙💚💛💜💝💞💟💠💡💢💣💤 <- 0x1f4a4
+[vsodium_emodji.cpp:281] debug:	0x1f4c5 -> 📅📆📇📈📉📊📋📌📍📎📏📐📑📒📓📔📕📖📗📘📙📚📛📜📝📞📟📠📡📢📣📤 <- 0x1f4e4
+[vsodium_emodji.cpp:281] debug:	0x1f4e5 -> 📥📦📧📨📩📪📫📬📭📮📯📰📱📲📳📴📵📶📷📸📹📺📻📼📽📾📿🔀🔁🔂🔃🔄 <- 0x1f504
+[vsodium_emodji.cpp:281] debug:	0x1f645 -> 🙅🙆🙇🙈🙉🙊🙋🙌🙍🙎🙏🚀🚁🚂🚃🚄🚅🚆🚇🚈🚉🚊🚋🚌🚍🚎🚏🚐🚑🚒🚓🚔 <- 0x1f694
+[vsodium_emodji.cpp:281] debug:	0x1f695 -> 🚕🚖🚗🚘🚙🚚🚛🚜🚝🚞🚟🚠🚡🚢🚣🚤🚥🚦🚧🚨🚩🚪🚫🚬🚭🚮🚯🚰🚱🚲🚳🚴 <- 0x1f6b4
+[vsodium_emodji.cpp:281] debug:	0x1f915 -> 🤕🤖🤗🤘🤙🤚🤛🤜🤝🤞🤟🤠🤡🤢🤣🤤🤥🤦🤧🤨🤩🤪🤫🤬🤭🤮🤯🤰🤱🤲🤳🤴 <- 0x1f934
+[vsodium_emodji.cpp:281] debug:	0x1f935 -> 🤵🤶🤷🤸🤹🤺🤻🤼🤽🤾🤿🥀🥁🥂🥃🥄🥅🥆🥇🥈🥉🥊🥋🥌🥍🥎🥏🥐🥑🥒🥓🥔 <- 0x1f954
+[vsodium_emodji.cpp:281] debug:	0x1f955 -> 🥕🥖🥗🥘🥙🥚🥛🥜🥝🥞🥟🥠🥡🥢🥣🥤🥥🥦🥧🥨🥩🥪🥫🥬🥭🥮🥯🥰🥱🥲🥳🥴 <- 0x1f974
+[vsodium_emodji.cpp:281] debug:	0x1f975 -> 🥵🥶🥷🥸🥹🥺🥻🥼🥽🥾🥿🦀🦁🦂🦃🦄🦅🦆🦇🦈🦉🦊🦋🦌🦍🦎🦏🦐🦑🦒🦓🦔 <- 0x1f994
+[vsodium_emodji.cpp:281] debug:	0x1f995 -> 🦕🦖🦗🦘🦙🦚🦛🦜🦝🦞🦟🦠🦡🦢🦣🦤🦥🦦🦧🦨🦩🦪🦫🦬🦭🦮🦯🦰🦱🦲🦳🦴 <- 0x1f9b4
+[vsodium_emodji.cpp:281] debug:	0x1f9b5 -> 🦵🦶🦷🦸🦹🦺🦻🦼🦽🦾🦿🧀🧁🧂🧃🧄🧅🧆🧇🧈🧉🧊🧋🧌🧍🧎🧏🧐🧑🧒🧓🧔 <- 0x1f9d4
+[vsodium_emodji.cpp:281] debug:	0x1f9d5 -> 🧕🧖🧗🧘🧙🧚🧛🧜🧝🧞🧟🧠🧡🧢🧣🧤🧥🧦🧧🧨🧩🧪🧫🧬🧭🧮🧯🧰🧱🧲🧳🧴 <- 0x1f9f4
+)";
+//=======================================================================================
+
+
 //=======================================================================================
 struct diapazone
 {
@@ -62,7 +92,10 @@ static diapazone::vector parse_diapazone( const std::string& str )
     auto lines = vbyte_buffer(str).split('\n');
     for ( auto& line : lines )
     {
+        line.trim_spaces();
         if ( line.empty() ) continue;
+        if ( line.starts_with("#") ) continue;
+
         auto diapazone = line.split_by_spaces().at(0);
 
         auto range = diapazone.split("..");
@@ -132,6 +165,73 @@ struct emodji
 
         return out;
     }
+    //-----------------------------------------------------------------------------------
+    static uint32_t utf8_extract_next_codepoint( std::string *src )
+    {
+        //-------------------------------------------------------------------------
+        auto take_next_sym = [src]()
+        {
+            auto ch = src->at(0);
+            src->erase(0, 1);
+
+            if ( (ch & 0xC0) != 0x80 )
+                throw verror << "Invalid UTF-8 next sequence";
+
+            return uint32_t(ch & 0x3F);
+        };
+        //-------------------------------------------------------------------------
+        uint32_t res = 0;
+        auto shift_6_and_take_next_sym = [&res, &take_next_sym]()
+        {
+            res <<= 6;
+            res |= take_next_sym();
+        };
+
+        unsigned char c0 = src->at(0);
+        //-------------------------------------------------------------------------
+        if ( (c0 & 0x80) == 0 )
+        {
+            res = c0;
+            src->erase(0, 1);
+            return res;
+        }
+        //-------------------------------------------------------------------------
+        if ( (c0 & 0xE0) == 0xC0 )
+        {
+            res = (c0 & 0x1F);
+            src->erase(0, 1);
+
+            shift_6_and_take_next_sym();
+
+            return res;
+        }
+        //-------------------------------------------------------------------------
+        if ( (c0 & 0xF0) == 0xE0 )
+        {
+            res = (c0 & 0x0F);
+            src->erase(0, 1);
+
+            shift_6_and_take_next_sym();
+            shift_6_and_take_next_sym();
+
+            return res;
+        }
+        //-------------------------------------------------------------------------
+        if ( (c0 & 0xF8) == 0xF0 )
+        {
+            res = (c0 & 0x07);
+            src->erase(0, 1);
+
+            shift_6_and_take_next_sym();
+            shift_6_and_take_next_sym();
+            shift_6_and_take_next_sym();
+
+            return res;
+        }
+        //-------------------------------------------------------------------------
+        throw verror << "Invalid UTF-8 sequence";
+        //-------------------------------------------------------------------------
+     }
     //-----------------------------------------------------------------------------------
     uint32_t at_cp( int index ) const
     {
@@ -245,7 +345,80 @@ static const emodji& default_emodji()
     res = new emodji( em );
     return *res;
 }
+//---------------------------------------------------------------------------------------
 //=======================================================================================
+struct Parse_log_of_work_emodji_v1
+{
+    std::vector<uint32_t> points;
+
+    static const Parse_log_of_work_emodji_v1& instance()
+    {
+        static const Parse_log_of_work_emodji_v1 res;
+        return res;
+    }
+
+    void print() const
+    {
+        vcat res;
+        for ( auto cp : points )
+        {
+            res( emodji::codepoint_to_utf8(cp) );
+        }
+        vdeb << res;
+    }
+
+private:
+    Parse_log_of_work_emodji_v1()
+    {
+        auto lines = vbyte_buffer(log_of_work_emodji_v1).split('\n');
+        for ( auto& line : lines )
+        {
+            line.trim_spaces();
+            if ( line.empty() ) continue;
+            if ( line.starts_with("#") ) continue;
+
+            auto parts = line.split("->");
+            if ( parts.size() != 2 )
+                throw verror << "line st0:" << line;
+
+            parts = parts.at(1).split("<-");
+            if ( parts.size() != 2 )
+                throw verror << "line st1:" << line;
+
+            auto emodjis_str = parts.at(0).trim_spaces().str();
+            while ( !emodjis_str.empty() )
+            {
+                auto cp = emodji::utf8_extract_next_codepoint( &emodjis_str );
+                points.push_back( cp );
+            }
+        }
+    }
+};
+//=======================================================================================
+static const emodji& default_emodji_v1()
+{
+    static const emodji *res{ nullptr };
+    if ( res )
+    {
+        return *res;
+    }
+
+
+    auto includes = parse_diapazone(log_of_work_emodji_v1);
+
+    vdeb << includes;
+
+    emodji_builder builder;
+    builder.include_diapazone(includes);
+    auto em = builder.build();
+
+    vdeb << em.code_points_list();
+    vdeb << em.code_points_list().size();
+
+    return *res;
+}
+//=======================================================================================
+
 
 //=======================================================================================
 std::string vsodium_emodji::get_emodji_for(uint16_t word)
@@ -253,8 +426,76 @@ std::string vsodium_emodji::get_emodji_for(uint16_t word)
     return default_emodji().get_rem( word );
 }
 //=======================================================================================
+
+std::string vsodium_emodji::work_emodji_v1(uint16_t word)
+{
+    auto &points = Parse_log_of_work_emodji_v1::instance().points;
+
+    if ( points.empty() )
+        throw std::runtime_error("No code points in emodji");
+
+    auto point = points.at( word % points.size() );
+    return emodji::codepoint_to_utf8( point );
+}
+//=======================================================================================
+uint16_t vsodium_emodji::work_emodji_v1_size()
+{
+    return Parse_log_of_work_emodji_v1::instance().points.size();
+}
+//=======================================================================================
+std::string vsodium_emodji::make_emodji_for_data( std::string data , uint8_t symbols_em )
+{
+    std::string res;
+
+    if ( symbols_em <= 0 )
+    {
+        throw verror << "size must be positive";
+    }
+    if ( symbols_em >= vsodium_emodji::work_emodji_v1_size() )
+    {
+        throw verror << "size must be less than "
+                     << vsodium_emodji::work_emodji_v1_size();
+    }
+
+    int added = 0;
+    while ( added < symbols_em )
+    {
+        auto mishumi = vsodium_string(data).mishumi_sha512_hash().str();
+        vbyte_buffer bb( mishumi );
+        auto view = bb.view();
+        auto sz = view.remained();
+        auto omit = view.show_u8() % sz;
+        if ( omit >= sz - 3 )
+            omit = sz - 4;
+        view.omit( omit );
+
+        auto cp_hash = view.show_u16_LE();
+
+        auto cur_em = vsodium_emodji::work_emodji_v1( cp_hash );
+        if ( res.find(cur_em) != std::string::npos )
+        {
+            continue;
+        }
+        res += cur_em;
+        ++added;
+        data = mishumi;
+    }
+
+    return res;
+}
+//=======================================================================================
 void vsodium_emodji::test()
 {
+    Parse_log_of_work_emodji_v1::instance().print();
+
+    vdeb << vsodium_emodji::make_emodji_for_data("Hello, world!");
+    vdeb << vsodium_emodji::make_emodji_for_data("Hello, world");
+    vdeb << vsodium_emodji::make_emodji_for_data("Hello, worl");
+    vdeb << vsodium_emodji::make_emodji_for_data("Hello, wor");
+    vdeb << vsodium_emodji::make_emodji_for_data("Hello, wo");
+    return;
+
+
     auto &em = default_emodji();
 
     static auto line_len = 32;
